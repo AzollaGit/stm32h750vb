@@ -1,0 +1,259 @@
+/*
+ * Copyright (c) 2020 WuhanStudio
+ * 
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+ /dts-v1/;
+
+ /*
+ #include <st/h7/stm32h750Xb.dtsi> 这里不用官方的配置，FLASH RAM大小不对，自己进行适配修改！
+  */
+#include <st/h7/stm32h750vb.dtsi>
+#include <st/h7/stm32h750vbtx-pinctrl.dtsi>
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+  
+/ {
+	model = "STMicroelectronics stm32h750vbt6 board";
+	compatible = "st,stm32h750";
+
+	/* HW resources are split between CM7 */
+	chosen {
+		zephyr,console = &usart1;
+		zephyr,shell-uart = &usart1;
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+		zephyr,flash-controller = &w25q128jv;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		orange_led:led_1 {
+			gpios = <&gpioa 15 GPIO_ACTIVE_LOW>;
+			label = "User LD2";
+			status = "okay";
+		};
+		
+		blue_led:led_2 {
+			gpios = <&gpiob 4 GPIO_ACTIVE_LOW>;
+			label = "User LD4";
+			status = "okay";
+		};
+
+		red_led:led_3 {
+		gpios = <&gpiob 5 GPIO_ACTIVE_LOW>;
+		label = "User LD3";
+		status = "okay";
+	};
+
+	green_led:led_4 {
+			gpios = <&gpiob 6 GPIO_ACTIVE_LOW>;
+			label = "User LD1";
+			status = "okay";
+		};
+	};
+
+	pwmleds {
+		compatible = "pwm-leds";
+		pwm_led0: pwm_led_0 {
+			pwms = <&pwm12 1 PWM_MSEC(20) PWM_POLARITY_NORMAL>;
+			label = "pwm led";
+			status = "okay";
+		};
+	};
+
+	keys {
+		compatible = "gpio-keys";
+		wake_up: button {
+			label = "User SW1";
+			gpios = <&gpiob 3 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+			zephyr,code = <INPUT_KEY_0>;
+			status = "okay";
+		};
+	};
+
+	otghs_ulpi_phy: otghs_ulpis_phy {
+		compatible = "usb-ulpi-phy";
+		#phy-cells = <0>;
+	};
+
+	aliases {
+		led0 = &green_led;
+		led1 = &orange_led;
+		led2 = &red_led;
+		led3 = &blue_led;
+		sw0 = &wake_up;
+		rtc = &rtc;
+		pwm-led0 = &pwm_led0;
+	};
+};
+ 
+&clk_lsi {
+	status = "disabled";
+};
+
+&clk_lse {
+	status = "okay";
+};
+
+&clk_hse {
+	clock-frequency = <DT_FREQ_M(25)>;
+	status = "okay";
+};
+ 
+&clk_hsi48 {
+	status = "okay";
+};
+
+&pll2 {
+	div-m = <5>;
+	mul-n = <96>;
+	div-p = <2>;
+	div-q = <4>;
+	div-r = <10>;
+	clocks = <&clk_hse>;  /* Assuming 25MHz HSE */
+	status = "okay";
+};
+
+&pll3 {
+	div-m = <5>;
+	mul-n = <96>;
+	div-p = <2>;
+	div-q = <4>;
+	div-r = <10>;
+	clocks = <&clk_hse>;  /* Assuming 25MHz HSE */
+	status = "okay";
+};
+
+&pll {
+	div-m = <5>;
+	mul-n = <160>;
+	div-p = <2>;
+	div-q = <4>;
+	div-r = <2>;
+	clocks = <&clk_hse>;
+	status = "okay";
+};
+
+&rcc {
+	clocks = <&pll>;  /* Set pll as SYSCLK source */
+	clock-frequency = <DT_FREQ_M(400)>; /* SYSCLK runs at 400MHz */
+	d1cpre = <1>;
+	hpre = <2>;
+	d1ppre = <2>;
+	d2ppre1 = <2>;
+	d2ppre2 = <2>;
+	d3ppre = <2>;
+};
+
+
+&usart1 {
+	status = "okay";
+	pinctrl-0 = <&usart1_tx_pa9 &usart1_rx_pa10>;
+	pinctrl-names = "default";
+	current-speed = <115200>;
+};
+
+&usart3 {
+	pinctrl-0 = <&usart3_tx_pb10 &usart3_rx_pb11>;
+	pinctrl-names = "default";
+	current-speed = <115200>;
+	status = "okay";
+};
+ 
+&rng {
+	status = "okay";
+};
+
+&vbat {
+	status = "okay";
+};
+
+&iwdg {
+	status = "okay";
+};
+
+
+zephyr_udc0: &usbotg_fs {
+	pinctrl-0 = <&usb_otg_fs_dm_pa11 &usb_otg_fs_dp_pa12>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+&rtc {
+	clocks = <&rcc STM32_CLOCK_BUS_APB4 0x00010000>,
+			<&rcc STM32_SRC_LSE RTC_SEL(1)>;
+	status = "okay";
+};
+
+&i2c1 {
+	pinctrl-0 = <&i2c1_scl_pb8 &i2c1_sda_pb9>;
+	pinctrl-names = "default";
+	clock-frequency = <I2C_BITRATE_FAST>;
+	status = "okay";
+};
+
+&timers12 {
+	status = "okay";
+	st,prescaler = <10000>;
+	pwm12: pwm {
+		status = "okay";
+		pinctrl-0 = <&tim12_ch1_pb14>;
+		pinctrl-names = "default";
+	};
+};
+
+&adc1 {
+	pinctrl-0 = <&adc1_inp15_pa3>;
+	pinctrl-names = "default";
+	st,adc-clock-source = <SYNC>;
+	st,adc-prescaler = <4>;
+	status = "okay";
+};
+
+
+&spi4 {
+	status = "okay";
+	pinctrl-0 = <&spi4_sck_pe2 &spi4_miso_pe5 &spi4_mosi_pe6>;	
+	cs-gpios = <&gpioe 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+	pinctrl-names = "default";
+};
+
+&ext_memory {
+	status = "disabled";
+};
+
+&dmamux1 {
+	status = "okay";
+};
+
+&quadspi {
+	pinctrl-names = "default";
+	pinctrl-0 = <	&quadspi_clk_pb2 &quadspi_bk1_ncs_pb10
+					&quadspi_bk1_io0_pd11 &quadspi_bk1_io1_pd12
+					&quadspi_bk1_io2_pe2 &quadspi_bk1_io3_pd13>;
+	// dmas = <&dma1 5 5 0x0000 0x03>;
+    // dma-names = "tx_rx";
+	status = "okay";
+	dual-flash;
+  
+	w25q128jv: qspi-nor-flash@90000000 {
+		compatible = "st,stm32-qspi-nor";
+		reg = <0x90000000 DT_SIZE_M(16)>; /* 128 Mbits */
+		qspi-max-frequency = <10000000>;
+		// reset-gpios = <&gpiod 13 GPIO_ACTIVE_LOW>;  /* quadspi_bk1_io3_pd13 */
+		// reset-gpios-duration = <1>;
+		spi-bus-width = <4>;
+		status = "okay";
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+			storage_partition: partition@0 {
+				label = "storage";
+				reg = <0x0 DT_SIZE_M(8)>;
+			};
+		};
+	};
+};

@@ -1,0 +1,10 @@
+# Copyright (c) 2023 Espressif Systems (Shanghai) Co., Ltd.
+# SPDX-License-Identifier: Apache-2.0
+
+if 0  #SOC_SERIES_STM32H7X
+ 
+default $(dt_node_reg_size_int,/soc/flash-controller@8000000/flash@0,0)
+
+default $(dt_node_reg_addr_hex,/soc/flash-controller@8000000/flash@0)
+
+endif # CONFIG_SOC_SERIES_STM32H7X

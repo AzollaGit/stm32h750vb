@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "*.rst": "restructuredtext",
+        "devicetree.h": "c",
+        "random": "c",
+        "kernel.h": "c",
+        "stm32_flash_api_extensions.h": "c",
+        "array": "c",
+        "string_view": "c",
+        "initializer_list": "c",
+        "pwm.h": "c",
+        "types.h": "c",
+        "flash.h": "c",
+        "dma.h": "c",
+        "stm32_ll_dma.h": "c"
+    }
+}

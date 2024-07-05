@@ -1,0 +1,25 @@
+# STM32H750B DISCOVERY board configuration
+
+# Copyright (c) 2024 STMicroelectronics
+# SPDX-License-Identifier: Apache-2.0
+
+if BOARD_STM32H750VBT6
+ 
+config BOARD
+	default "stm32h750vbt6"
+
+if NETWORKING
+
+config NET_L2_ETHERNET
+	default y
+
+endif # NETWORKING
+
+config SPI_STM32_INTERRUPT
+	default y
+	depends on SPI
+
+config FLASH_LOG_LEVEL
+	default 4
+
+endif # BOARD_STM32H750VBT6
