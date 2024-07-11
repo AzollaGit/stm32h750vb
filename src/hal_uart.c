@@ -91,7 +91,7 @@ int hal_uart_init(uart_recv_callback_t cb)
 {
 	if (!device_is_ready(uart_dev)) {
 		LOG_WRN("UART device not found!");
-		return -EPERM;
+		return -ENODEV;
 	}
 
 	/* configure interrupt and callback to receive data */

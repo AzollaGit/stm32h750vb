@@ -94,3 +94,26 @@ int hal_gpio_init(void)
 
 	return ret;
 }
+
+#if 0
+/* -1- Enable GPIO Clock (to be able to program the configuration registers) */
+  	__HAL_RCC_GPIOA_CLK_ENABLE();
+
+	/* -2- Configure IO in output push-pull mode to drive external LEDs */
+	GPIO_InitTypeDef  GPIO_InitStruct;
+	GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull  = GPIO_PULLUP;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+
+	GPIO_InitStruct.Pin = GPIO_PIN_13 | GPIO_PIN_14;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+	/* -3- Toggle IO in an infinite loop */
+	while (1)
+	{
+		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_13 | GPIO_PIN_14);
+		/* Insert delay 100 ms */
+		HAL_Delay(100);
+	}
+#endif
+

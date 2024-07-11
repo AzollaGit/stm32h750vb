@@ -57,7 +57,7 @@
 	pwmleds {
 		compatible = "pwm-leds";
 		pwm_led0: pwm_led_0 {
-			pwms = <&pwm12 1 PWM_MSEC(20) PWM_POLARITY_NORMAL>;
+			pwms = <&pwm12 1 PWM_USEC(100) PWM_POLARITY_NORMAL>;
 			label = "pwm led";
 			status = "okay";
 		};
@@ -174,6 +174,19 @@
 	status = "okay";
 };
 
+&mac {
+	status = "disabled";
+	pinctrl-0 = <&eth_mdc_pc1
+		     &eth_rxd0_pc4
+		     &eth_rxd1_pc5
+		     &eth_ref_clk_pa1
+		     &eth_mdio_pa2
+		     &eth_crs_dv_pa7
+		     &eth_tx_en_pb11
+		     &eth_txd0_pb12
+		     &eth_txd1_pb13>;
+	pinctrl-names = "default";
+};
 
 zephyr_udc0: &usbotg_fs {
 	pinctrl-0 = <&usb_otg_fs_dm_pa11 &usb_otg_fs_dp_pa12>;
@@ -191,12 +204,19 @@ zephyr_udc0: &usbotg_fs {
 	pinctrl-0 = <&i2c1_scl_pb8 &i2c1_sda_pb9>;
 	pinctrl-names = "default";
 	clock-frequency = <I2C_BITRATE_FAST>;
-	status = "okay";
+	status = "disabled";
+};
+
+&i2c2 {
+	pinctrl-0 = <&i2c2_scl_pb10 &i2c2_sda_pb11>;
+	pinctrl-names = "default";
+	status = "disabled";
+	clock-frequency = <I2C_BITRATE_FAST>;
 };
 
 &timers12 {
 	status = "okay";
-	st,prescaler = <10000>;
+	st,prescaler = <999>;
 	pwm12: pwm {
 		status = "okay";
 		pinctrl-0 = <&tim12_ch1_pb14>;
@@ -212,6 +232,18 @@ zephyr_udc0: &usbotg_fs {
 	status = "okay";
 };
 
+&adc3 {
+	pinctrl-0 = <&adc3_inp10_pc0>;
+	pinctrl-names = "default";
+	st,adc-clock-source = <ASYNC>;
+	st,adc-prescaler = <4>;
+	status = "okay";
+};
+
+/* 注意：要使能 &adc3，因为：io-channels = <&adc3 18>;  */
+&die_temp { 
+	status = "okay";
+};
 
 &spi4 {
 	status = "okay";
@@ -219,6 +251,7 @@ zephyr_udc0: &usbotg_fs {
 	cs-gpios = <&gpioe 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
 	pinctrl-names = "default";
 };
+ 
 
 &ext_memory {
 	status = "disabled";
@@ -227,32 +260,50 @@ zephyr_udc0: &usbotg_fs {
 &dmamux1 {
 	status = "okay";
 };
+ 
+&sdmmc1 {
+	pinctrl-0 = <	&sdmmc1_ck_pc12 &sdmmc1_cmd_pd2
+					&sdmmc1_d0_pc8  &sdmmc1_d1_pc9
+					&sdmmc1_d2_pc10 &sdmmc1_d3_pc11>;
+	// cd-gpios = <&gpioa 8 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+	pinctrl-names = "default";
+	status = "okay";
+	bus-width = <1>;
+	clk-div = <1>;
+	clocks = <&rcc STM32_CLOCK_BUS_AHB3 0x00010000>,
+			 <&rcc STM32_SRC_PLL3_R SDMMC_SEL(0)>;   // 必须48MHz才行！
+	// idma;
+	// dmas = <&dma2 4 6 0x30000 0x00>, <&dma2 4 3 0x30000 0x00>;
+	// dma-names = "tx", "rx";
+};
 
 &quadspi {
-	pinctrl-names = "default";
 	pinctrl-0 = <	&quadspi_clk_pb2 &quadspi_bk1_ncs_pb10
 					&quadspi_bk1_io0_pd11 &quadspi_bk1_io1_pd12
 					&quadspi_bk1_io2_pe2 &quadspi_bk1_io3_pd13>;
-	// dmas = <&dma1 5 5 0x0000 0x03>;
-    // dma-names = "tx_rx";
+	pinctrl-names = "default";
 	status = "okay";
-	dual-flash;
-  
+
 	w25q128jv: qspi-nor-flash@90000000 {
 		compatible = "st,stm32-qspi-nor";
 		reg = <0x90000000 DT_SIZE_M(16)>; /* 128 Mbits */
-		qspi-max-frequency = <10000000>;
-		// reset-gpios = <&gpiod 13 GPIO_ACTIVE_LOW>;  /* quadspi_bk1_io3_pd13 */
-		// reset-gpios-duration = <1>;
+		qspi-max-frequency = <80000000>;
 		spi-bus-width = <4>;
+		writeoc="PP_1_1_4";
 		status = "okay";
 		partitions {
 			compatible = "fixed-partitions";
 			#address-cells = <1>;
 			#size-cells = <1>;
+			
 			storage_partition: partition@0 {
 				label = "storage";
 				reg = <0x0 DT_SIZE_M(8)>;
+			};
+
+			nvs_partition: partition@800000 {
+				label = "nvs";
+				reg = <0x800000 DT_SIZE_M(8)>;
 			};
 		};
 	};

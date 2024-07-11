@@ -6,7 +6,7 @@ extern "C" {
 #endif
  
 void hal_pwm_setup(void);
-void hal_pwm_set_duty(uint32_t period, uint32_t pulse);
+void hal_pwm_set_duty(uint8_t duty);
  
 #ifdef __cplusplus
 }

@@ -19,7 +19,19 @@ config SPI_STM32_INTERRUPT
 	default y
 	depends on SPI
 
+config USE_STM32_HAL_GPIO
+	default y
+
+config USE_STM32_HAL_MMC
+	default y
+
+config USE_STM32_LL_SDMMC
+	default y
+
+config USE_STM32_HAL_SD
+	default y
+
 config FLASH_LOG_LEVEL
-	default 4
+	default 2
 
 endif # BOARD_STM32H750VBT6
