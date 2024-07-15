@@ -1,0 +1,42 @@
+{
+    "configurations": [
+        {
+            "type": "cortex-debug",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "name": "Launch",
+            "executable": "${workspaceFolder}/build/zephyr/zephyr.elf",
+            "device": "cortex-M7",
+            "servertype": "jlink",
+            "rtos": "Zephyr",
+            "serverpath": "C:\\Program Files\\SEGGER\\JLink_V794e\\JLinkGDBServerCL.exe",
+            "armToolchainPath": "E:\\zephyr\\zephyr-sdk-0.16.8\\arm-zephyr-eabi\\bin",
+            "toolchainPrefix": "arm-zephyr-eabi",
+            "interface": "swd",
+            "showDevDebugOutput": "none",
+            "runToEntryPoint": "main",
+            "serverArgs": [
+                "-timeout",
+                "0",
+                "-strisct",
+                "singlerun",
+                "-vd",
+                "-ir",
+                "-lovalhostonly",
+                "1",
+                "-endian",
+                "little"
+            ],
+            "preLaunchCommands": [
+                "monitor flash erase",
+                "monitor clrbp",
+                "monitor reset",
+            ],
+            "preRestartCommands": [],
+            // "postLaunchCommands": [
+            //     "set $sp-((int*_vector_table)[0]"
+            // ],
+
+        }
+    ]
+}

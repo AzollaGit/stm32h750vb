@@ -1,10 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
-board_runner_args(jlink "--device=STM32H750VB" "--speed=4000")
+board_runner_args(jlink "--device=STM32H735IG" "--speed=4000")
+board_runner_args(openocd "--config=${BOARD_DIR}/support/openocd.cfg")
 board_runner_args(openocd --target-handle=_CHIPNAME.cpu0)
 
 if(CONFIG_STM32_MEMMAP)
-board_runner_args(stm32cubeprogrammer "--port=swd" "--reset-mode=hw")
+board_runner_args(stm32cubeprogrammer "--port=swd" "--reset-mode=sw" "--frequency=4000")
 board_runner_args(stm32cubeprogrammer "--extload=MT25TL01G_STM32H750B-DISCO.stldr")
 else()
 board_runner_args(stm32cubeprogrammer "--port=swd" "--reset-mode=hw" )

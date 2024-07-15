@@ -59,7 +59,7 @@ int main(void)
 #if DT_HAS_COMPAT_STATUS_OKAY(st_stm32_sdmmc)
 // #if DT_NODE_HAS_STATUS(DT_PATH(soc, sdmmc_52007000), okay)
 	sd_disk_init();
-#else	
+#else
 	bap_sd_init();
 #endif
 
@@ -75,13 +75,13 @@ int main(void)
 
 		(void)cpu_temp_read();
   
-		#if 1
+		#if 0
 		struct rtc_time datetime_get;
 		time_t timer_get = rtc_read_time(&datetime_get);
 		LOG_DBG("datetime_get.tm_sec = %d, %lld", datetime_get.tm_sec, timer_get);
 		#endif
         k_msleep(1000);
-		//break;
+		//break;    
     }
 
 	hal_adc_setup();
